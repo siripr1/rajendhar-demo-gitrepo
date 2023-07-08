@@ -1,7 +1,7 @@
-trigger:
-  branches:
-    include:
-    - main   # Mention the branch name, which you want to run the pipeline
+trigger: none
+  #branches:
+  #  include:
+  #  - main   # Mention the branch name, which you want to run the pipeline
 pool:
   name: rajendhar-ado ## Agent pool name (self hosted); Azure Pipelines is the Azure pipeline its free
 # variables:

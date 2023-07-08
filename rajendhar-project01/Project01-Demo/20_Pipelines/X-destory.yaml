@@ -24,7 +24,7 @@ stages:
             displayName: 'Terraform : init'
             inputs:
               command: init
-              workingDirectory: $(System.DefaultWorkingDirectory)/Project01-Demo/10_ResourceCode
+              workingDirectory: $(System.DefaultWorkingDirectory)/rajendhar-project01/Project01-Demo/10_ResourceCode
               backendServiceArm: 'rajendhar-sc'
               backendAzureRmResourceGroupName: rajendhar-rg
               backendAzureRmStorageAccountName: rajendharprojectstate
@@ -35,7 +35,7 @@ stages:
             displayName: 'Terraform : destroy'
             inputs:
               command: destroy
-              workingDirectory: $(System.DefaultWorkingDirectory)/Project01-Demo/10_ResourceCode
+              workingDirectory: $(System.DefaultWorkingDirectory)/rajendhar-project01/Project01-Demo/10_ResourceCode
               environmentServiceNameAzureRM: 'rajendhar-sc'
               backendAzureRmResourceGroupName: rajendhar-rg
               backendAzureRmStorageAccountName: rajendharprojectstate
