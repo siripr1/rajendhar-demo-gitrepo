@@ -76,7 +76,8 @@ stages:
           - task: TerraformTaskV4@4
             displayName: 'Terraform : apply'
             inputs:
-              command: apply
+              #command: apply
+              command: destroy
               workingDirectory: $(System.DefaultWorkingDirectory)/rajendhar-project01/Project01-Demo/10_ResourceCode
               environmentServiceNameAzureRM: 'rajendhar-sc'
               backendAzureRmResourceGroupName: rajendhar-rg
