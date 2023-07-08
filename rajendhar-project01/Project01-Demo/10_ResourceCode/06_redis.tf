@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "raj-example" {
   location = var.location
 }
 
-# NOTE: the Name used for Redis needs to be globally unique
+#--- NOTE: the Name used for Redis needs to be globally unique
 resource "azurerm_redis_cache" "raj-example" {
   name                = "${var.prefix}-cache"
   location            = azurerm_resource_group.create-rg.location
@@ -22,4 +22,4 @@ resource "azurerm_redis_cache" "raj-example" {
   minimum_tls_version = "1.2"
 
   redis_configuration {}
-}
+} 
