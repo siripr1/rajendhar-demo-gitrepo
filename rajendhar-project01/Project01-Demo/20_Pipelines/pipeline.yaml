@@ -1,0 +1,85 @@
+trigger:
+  branches:
+    include:
+    - main   # Mention the branch name, which you want to run the pipeline
+pool:
+  name: rajendhar-ado ## Agent pool name (self hosted); Azure Pipelines is the Azure pipeline its free
+# variables:
+# - group: backend-resources 
+# Stage 1 : in the below stage the code will validate and display the Plan 
+stages:
+- stage: terraformplan 
+  displayName: 'planTerraform' # Pipeline Stage name.
+  jobs:
+  - job: terraformplan
+    steps:
+    - task: TerraformInstaller@1 # It will install terraform latest version.
+      displayName: 'InstallTerraformlatest'
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform : init' # Task display name
+      inputs:
+        command: init # terraform command that will be execute.
+        workingDirectory: $(System.DefaultWorkingDirectory)/Project01-Demo/10_ResourceCode # Path of the code in repo.
+        backendServiceArm: 'rajendhar-sc' # Service connection name in Azure ADO.
+        backendAzureRmResourceGroupName: rajendhar-rg # Resource Group Name where tfstatefile saved.
+        backendAzureRmStorageAccountName: rajendharprojectstate # Storage account name where tfstatefile saved.
+        backendAzureRmContainerName: statefiles # Storage container name where tfstatefile saved.
+        backendAzureRmKey: 'resource-group.tfstate' # tfstate file name.
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform : plan'
+      inputs:
+        command: plan
+        workingDirectory: $(System.DefaultWorkingDirectory)/Project01-Demo/10_ResourceCode
+        environmentServiceNameAzureRM: 'rajendhar-sc'
+        backendAzureRmResourceGroupName: rajendhar-rg
+        backendAzureRmStorageAccountName: rajendharprojectstate
+        backendAzureRmContainerName: statefiles
+        backendAzureRmKey: 'resource-group.tfstate'  
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform : validate'
+      inputs:
+        command: validate
+        workingDirectory: $(System.DefaultWorkingDirectory)/Project01-Demo/10_ResourceCode
+        environmentServiceNameAzureRM: 'rajendhar-sc'
+        backendAzureRmResourceGroupName: rajendhar-rg
+        backendAzureRmStorageAccountName: rajendharprojectstate
+        backendAzureRmContainerName: statefiles
+        backendAzureRmKey: 'resource-group.tfstate'  
+
+        
+# Stage 2: It will deploy the code from Project01-Demo/10_ResourceCode
+- stage: terraformapply
+  displayName: 'applyTerraform'
+  jobs:
+  - deployment: terraformapply
+    timeoutInMinutes: 0
+    displayName: Provision infrastructure
+    environment: "Deployment"
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: TerraformInstaller@1
+            displayName: 'InstallTerraformlatest'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform : init'
+            inputs:
+              command: init
+              workingDirectory: $(System.DefaultWorkingDirectory)/Project01-Demo/10_ResourceCode
+              backendServiceArm: 'rajendhar-sc'
+              backendAzureRmResourceGroupName: rajendhar-rg
+              backendAzureRmStorageAccountName: rajendharprojectstate
+              backendAzureRmContainerName: statefiles
+              backendAzureRmKey: 'resource-group.tfstate'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform : apply'
+            inputs:
+              command: apply
+              workingDirectory: $(System.DefaultWorkingDirectory)/Project01-Demo/10_ResourceCode
+              environmentServiceNameAzureRM: 'rajendhar-sc'
+              backendAzureRmResourceGroupName: rajendhar-rg
+              backendAzureRmStorageAccountName: rajendharprojectstate
+              backendAzureRmContainerName: statefiles
+              backendAzureRmKey: 'resource-group.tfstate'            

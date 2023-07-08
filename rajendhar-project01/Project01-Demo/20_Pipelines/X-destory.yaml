@@ -1,0 +1,43 @@
+trigger: none
+pool:
+  name: rajendhar-ado ## Agent pool name (self hosted); Azure Pipelines is the Azure pipeline its free
+
+# !!!!!! HANDLE WITH CARE!!!!!!!!!!!
+
+# Stage 1 : in the below stage the It will destory the infrastracure
+stages:
+- stage: terraformapply
+  displayName: 'applyTerraform'
+  jobs:
+  - deployment: terraformapply
+    timeoutInMinutes: 0
+    displayName: Provision infrastructure
+    environment: "Deployment"
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: TerraformInstaller@1
+            displayName: 'InstallTerraformlatest'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform : init'
+            inputs:
+              command: init
+              workingDirectory: $(System.DefaultWorkingDirectory)/Project01-Demo/10_ResourceCode
+              backendServiceArm: 'rajendhar-sc'
+              backendAzureRmResourceGroupName: rajendhar-rg
+              backendAzureRmStorageAccountName: rajendharprojectstate
+              backendAzureRmContainerName: statefiles
+              backendAzureRmKey: 'resource-group.tfstate'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform : destroy'
+            inputs:
+              command: destroy
+              workingDirectory: $(System.DefaultWorkingDirectory)/Project01-Demo/10_ResourceCode
+              environmentServiceNameAzureRM: 'rajendhar-sc'
+              backendAzureRmResourceGroupName: rajendhar-rg
+              backendAzureRmStorageAccountName: rajendharprojectstate
+              backendAzureRmContainerName: statefiles
+              backendAzureRmKey: 'resource-group.tfstate'            
