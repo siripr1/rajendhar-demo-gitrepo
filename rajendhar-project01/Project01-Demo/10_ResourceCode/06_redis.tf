@@ -1,9 +1,7 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-provider "azurerm" {
-  features {}
-}
+
 
 resource "azurerm_resource_group" "raj-example" {
   name     = "${var.prefix}-resources"
@@ -11,10 +9,10 @@ resource "azurerm_resource_group" "raj-example" {
 }
 
 #--- NOTE: the Name used for Redis needs to be globally unique
-resource "azurerm_redis_cache" "raj-example" {
+resource "azurerm_redis_cache" "raj-example-1" {
   name                = "${var.prefix}-cache"
-  location            = azurerm_resource_group.create-rg.location
-  resource_group_name = azurerm_resource_group.create-rg.name
+  location            = azurerm_resource_group.raj-example.location
+  resource_group_name = azurerm_resource_group.raj-example.name
   capacity            = 2
   family              = "C"
   sku_name            = "Standard"
